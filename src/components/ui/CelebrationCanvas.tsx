@@ -63,18 +63,18 @@ function spawnSparkBloom(width: number, height: number, particles: Particle[]) {
   const x = rand(width * 0.12, width * 0.88);
   const y = rand(height * 0.1, height * 0.64);
   const hue = colors[Math.floor(rand(0, colors.length))];
-  const count = Math.floor(rand(10, 18));
+  const count = Math.floor(rand(14, 24));
 
   for (let i = 0; i < count; i += 1) {
     const angle = (Math.PI * 2 * i) / count + rand(-0.18, 0.18);
-    const speed = rand(0.9, 4.2);
+    const speed = rand(1.1, 4.9);
     particles.push({
       x,
       y,
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
       life: 0,
-      maxLife: rand(28, 52),
+      maxLife: rand(34, 62),
       hue: hue + rand(-18, 18),
       size: rand(1.1, 3.2),
     });
@@ -100,8 +100,8 @@ export function CelebrationCanvas() {
     let isInView = true;
     const isSmallScreen = window.innerWidth < 640;
     const activeBalloonCount = prefersReducedMotion ? 4 : isSmallScreen ? 5 : defaultBalloonCount;
-    const sparkInterval = prefersReducedMotion ? 1500 : isSmallScreen ? 620 : 420;
-    const maxParticles = prefersReducedMotion ? 90 : isSmallScreen ? 150 : 260;
+    const sparkInterval = prefersReducedMotion ? 1500 : isSmallScreen ? 520 : 300;
+    const maxParticles = prefersReducedMotion ? 90 : isSmallScreen ? 170 : 320;
     const balloons: Balloon[] = [];
     const particles: Particle[] = [];
 

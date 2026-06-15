@@ -19,6 +19,16 @@ export function MemoryGallerySection() {
   const [direction, setDirection] = useState(1);
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoItem | null>(null);
 
+  const albumCounts = useMemo(() => {
+    return albumOrder.reduce(
+      (counts, album) => ({
+        ...counts,
+        [album]: birthdayConfig.photoItems.filter((photo) => photo.category === album).length,
+      }),
+      {} as Record<PhotoCategory, number>,
+    );
+  }, []);
+
   const albumPhotos = useMemo(
     () => birthdayConfig.photoItems.filter((photo) => photo.category === selectedAlbum),
     [selectedAlbum],
@@ -42,6 +52,10 @@ export function MemoryGallerySection() {
     setDirection(1);
   }, [selectedAlbum]);
 
+  function selectAlbum(album: PhotoCategory) {
+    setSelectedAlbum(album);
+  }
+
   function goToNext() {
     if (albumPhotos.length <= 1) return;
     setDirection(1);
@@ -59,10 +73,40 @@ export function MemoryGallerySection() {
     setActiveIndex(index);
   }
 
+  const albumTabs = (
+    <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {albumOrder.map((album) => {
+        const isActive = selectedAlbum === album;
+
+        return (
+          <button
+            key={album}
+            type="button"
+            className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-black transition focus:outline-none focus:ring-4 focus:ring-rose-200 ${
+              isActive
+                ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20"
+                : "bg-white text-slate-700 shadow-sm ring-1 ring-slate-200 hover:bg-rose-50"
+            }`}
+            onClick={() => selectAlbum(album)}
+          >
+            <span>{birthdayConfig.galleryCategories[album]}</span>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs ${
+                isActive ? "bg-white/22 text-white" : "bg-slate-100 text-slate-500"
+              }`}
+            >
+              {albumCounts[album]}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+
   return (
     <SectionWrapper id="gallery" className="!overflow-visible bg-[#f7fbff] text-slate-950">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm font-black uppercase tracking-[0.22em] text-white">
               <ImageIcon size={16} /> Memory gallery
@@ -76,16 +120,17 @@ export function MemoryGallerySection() {
           </div>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
-          <aside className="rounded-[26px] border border-slate-200 bg-white/88 p-4 shadow-xl shadow-slate-900/8">
+        <div className="sticky top-1 z-30 -mx-4 mb-5 border-y border-slate-200/70 bg-[#f7fbff]/94 px-4 py-2.5 shadow-sm backdrop-blur lg:hidden">
+          {albumTabs}
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start xl:gap-12">
+          <aside className="sticky top-6 hidden rounded-[26px] border border-slate-200 bg-white/88 p-4 shadow-xl shadow-slate-900/8 lg:block">
             <p className="px-2 text-xs font-black uppercase tracking-[0.26em] text-rose-500">
               Chọn xấp ảnh
             </p>
             <div className="mt-4 grid gap-2">
               {albumOrder.map((album) => {
-                const count = birthdayConfig.photoItems.filter(
-                  (photo) => photo.category === album,
-                ).length;
                 const isActive = selectedAlbum === album;
 
                 return (
@@ -97,7 +142,7 @@ export function MemoryGallerySection() {
                         ? "bg-rose-500 text-white shadow-lg shadow-rose-500/20"
                         : "bg-slate-50 text-slate-800 hover:bg-rose-50"
                     }`}
-                    onClick={() => setSelectedAlbum(album)}
+                    onClick={() => selectAlbum(album)}
                   >
                     <span>{birthdayConfig.galleryCategories[album]}</span>
                     <span
@@ -105,7 +150,7 @@ export function MemoryGallerySection() {
                         isActive ? "bg-white/22 text-white" : "bg-white text-slate-500"
                       }`}
                     >
-                      {count}
+                      {albumCounts[album]}
                     </span>
                   </button>
                 );
@@ -126,9 +171,9 @@ export function MemoryGallerySection() {
           </aside>
 
           <div className="min-w-0">
-            <div className="mb-5 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-black uppercase tracking-[0.24em] text-rose-500">
+            <div className="mb-5 flex items-center justify-between gap-3 rounded-[24px] border border-slate-200 bg-white/78 p-3 shadow-sm lg:bg-transparent lg:p-0 lg:shadow-none lg:border-0">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-black uppercase tracking-[0.2em] text-rose-500">
                   {birthdayConfig.galleryCategories[selectedAlbum]}
                 </p>
                 <p className="mt-1 text-2xl font-black text-slate-950">
@@ -136,7 +181,7 @@ export function MemoryGallerySection() {
                   {String(albumPhotos.length).padStart(2, "0")}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex shrink-0 gap-2">
                 <button
                   type="button"
                   className="grid h-11 w-11 place-items-center rounded-full bg-slate-950 text-white shadow-lg transition hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-rose-200 disabled:cursor-not-allowed disabled:opacity-35"
@@ -170,7 +215,7 @@ export function MemoryGallerySection() {
               />
             </div>
 
-            <div className="relative mx-auto mt-7 w-full max-w-[480px] pb-12">
+            <div className="relative mx-auto mt-6 w-full max-w-[460px] pb-8 sm:max-w-[540px] sm:pb-12 xl:max-w-[600px]">
               <div className="absolute inset-x-6 bottom-6 top-8 rounded-[34px] bg-slate-900/8 blur-2xl" />
 
               {backCards
@@ -182,8 +227,8 @@ export function MemoryGallerySection() {
                     className="pointer-events-none absolute inset-x-2 top-0 overflow-hidden rounded-[28px] border border-white bg-white p-3 shadow-2xl shadow-slate-900/12 sm:inset-x-7"
                     style={{ zIndex: visibleStackCount - offset }}
                     animate={{
-                      x: offset * 12,
-                      y: offset * 16,
+                      x: offset * 10,
+                      y: offset * 14,
                       rotate: offset % 2 === 0 ? -2 + offset : 2 + offset,
                       scale: 1 - offset * 0.045,
                       opacity: 1 - offset * 0.14,
@@ -251,7 +296,18 @@ export function MemoryGallerySection() {
               )}
             </div>
 
-            <div className="mt-2 flex gap-2 overflow-x-auto pb-2">
+            {activePhoto && (
+              <div className="mx-auto -mt-2 max-w-[500px] rounded-[22px] border border-slate-200 bg-white/82 p-4 shadow-sm lg:hidden">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">
+                  Ghi chú ảnh
+                </p>
+                <p className="mt-2 text-base font-semibold leading-7 text-slate-700">
+                  {activePhoto.caption}
+                </p>
+              </div>
+            )}
+
+            <div className="mx-auto mt-4 flex max-w-[600px] gap-2 overflow-x-auto pb-2">
               {albumPhotos.map((photo, index) => (
                 <button
                   key={photo.id}

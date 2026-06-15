@@ -40,13 +40,13 @@ export function TrollIntroSection({
         </button>
 
         <motion.div
-          className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-400/40 bg-red-500/12 px-4 py-2 text-sm font-bold uppercase tracking-[0.24em] text-red-100 shadow-lg shadow-red-950/40"
+          className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-400/40 bg-red-500/12 px-4 py-2 text-sm font-black uppercase tracking-[0.24em] text-red-100 shadow-lg shadow-red-950/40"
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           <ShieldAlert size={17} />
-          Cảnh báo truy cập
+          Bước 01 / Cảnh báo truy cập
         </motion.div>
 
         <div className="grid gap-5 rounded-[30px] border border-emerald-300/20 bg-slate-950/78 p-5 shadow-neon backdrop-blur-xl sm:p-7 lg:grid-cols-[1.05fr_0.95fr] lg:p-8">
@@ -59,15 +59,14 @@ export function TrollIntroSection({
                 <GlitchText>{birthdayConfig.conceptName}</GlitchText>
               </h1>
               <p className="mt-5 max-w-xl text-base font-semibold leading-7 text-slate-300 sm:text-lg">
-                Một hồ sơ bị niêm phong vì chứa quá nhiều bằng chứng sinh nhật,
-                ảnh đáng nghi và dấu hiệu được yêu thương quá mức.
+                Một hồ sơ bị niêm phong vì chứa quá nhiều bằng chứng sinh nhật, ảnh đáng nghi và dấu hiệu được yêu thương quá mức.
               </p>
             </div>
 
             <div className="mt-8">
               <div className="mb-3 flex items-center justify-between font-mono text-xs uppercase tracking-[0.2em] text-emerald-300/85">
                 <span>Đang xác minh hồ sơ</span>
-                <span>01/04</span>
+                <span>01/03</span>
               </div>
               <div className="h-3 overflow-hidden rounded-full bg-white/10">
                 <motion.div
@@ -95,7 +94,7 @@ export function TrollIntroSection({
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.28em] text-fuchsia-200">
-                    Phóng sự điều tra
+                    Phòng phóng sự điều tra
                   </p>
                   <h2 className="mt-1 text-2xl font-black text-white">Mở đầu điều tra</h2>
                 </div>

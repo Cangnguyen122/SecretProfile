@@ -32,6 +32,9 @@ export function FinalCelebrationSection() {
     };
   }, [prefersReducedMotion]);
 
+  const petals = Array.from({ length: 18 }, (_, index) => index + 1);
+  const fireworks = Array.from({ length: 7 }, (_, index) => index + 1);
+
   return (
     <SectionWrapper
       id="final-celebration"
@@ -39,6 +42,16 @@ export function FinalCelebrationSection() {
       contentClassName="min-h-screen flex items-center"
     >
       <CelebrationCanvas />
+      {!prefersReducedMotion && (
+        <div className="celebration-sky" aria-hidden="true">
+          {fireworks.map((firework) => (
+            <span key={`firework-${firework}`} className={`firework firework-${firework}`} />
+          ))}
+          {petals.map((petal) => (
+            <span key={`petal-${petal}`} className={`petal petal-${petal}`} />
+          ))}
+        </div>
+      )}
 
       <div className="relative z-10 mx-auto w-full max-w-5xl text-center">
         <div className="mx-auto mb-7 grid h-20 w-20 place-items-center rounded-full bg-white/85 shadow-2xl shadow-rose-300/40">
