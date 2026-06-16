@@ -11,7 +11,6 @@ import { VideoWishesSection } from "./components/sections/VideoWishesSection";
 import { ScrollProgress } from "./components/ui/ScrollProgress";
 import { birthdayConfig } from "./data/birthdayConfig";
 import { SecretVideoSection } from "./components/sections/SecretVideoSection";
-
 type ExperienceStage = "intro" | "scan" | "challenge" | "story";
 
 export default function App() {
@@ -247,9 +246,9 @@ export default function App() {
             />
 
             <MemoryGallerySection />
-            
-            <FinalCelebrationSection />
             <SecretVideoSection />
+            <FinalCelebrationSection />
+            {/* <SecretVideoSection /> */}
           </motion.div>
         )}
       </AnimatePresence>
