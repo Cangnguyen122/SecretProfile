@@ -41,6 +41,16 @@ export function FinalCelebrationSection() {
       className="romantic-celebration-bg text-slate-950"
       contentClassName="min-h-screen flex items-center"
     >
+      <img
+        src="assets/final-bg.jpeg"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
+        />
+      <div
+            className="absolute inset-0 bg-white/60 backdrop-blur-[2px]"
+            aria-hidden="true"
+          />
       <CelebrationCanvas />
       {!prefersReducedMotion && (
         <div className="celebration-sky" aria-hidden="true">

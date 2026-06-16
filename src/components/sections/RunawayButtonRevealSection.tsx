@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { LockOpen, ShieldCheck } from "lucide-react";
+import { FileWarning, LockOpen, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { birthdayConfig } from "../../data/birthdayConfig";
 import { GlitchText } from "../ui/GlitchText";
@@ -17,14 +17,14 @@ const evidenceLabels = [
   "Sắp mở khóa",
 ];
 const trollMessages = [
-  "Ủa? Bấm hụt hả?",
-  "Chậm quá nha, hồ sơ né được luôn.",
+  "Ủa? Bấm hụt hả? 🙊",
+  "Chậm quá nha, thử lại xem",
   "Có nhân chứng nói bạn vừa trượt tay.",
-  "Hệ thống nghi ngờ kỹ năng click.",
-  "Meme mới vừa được anh em gửi tới.",
-  "Bằng chứng đang chạy nhanh hơn bạn.",
+  "Hệ thống nghi ngờ kỹ năng click. 😜",
+  "Đánh giá thấp vua bầu trời á nha. 😏",
+  "Fishee có hỗ trợ nhưng không đáng kể 😄.",
   "Bí mật chưa dễ mở vậy đâu.",
-  "Rồi đó, đủ thủ tục troll rồi.",
+  "Bạn nghĩ đã mở được hay chưa? 😆",
 ];
 
 type RunawayButtonRevealSectionProps = {
@@ -47,7 +47,7 @@ function overlaps(
   second: FloatingBox,
   secondSize: { width: number; height: number },
 ) {
-  const gap = 28;
+  const gap = 24;
   return !(
     first.x + firstSize.width + gap < second.x ||
     second.x + secondSize.width + gap < first.x ||
@@ -56,40 +56,66 @@ function overlaps(
   );
 }
 
-export function RunawayButtonRevealSection({ onUnlocked }: RunawayButtonRevealSectionProps) {
+export function RunawayButtonRevealSection({
+  onUnlocked,
+}: RunawayButtonRevealSectionProps) {
   const playgroundRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [dodges, setDodges] = useState(0);
-  const [buttonPosition, setButtonPosition] = useState<FloatingBox | null>(null);
-  const [stickerPosition, setStickerPosition] = useState<FloatingBox | null>(null);
+  const [buttonPosition, setButtonPosition] = useState<FloatingBox | null>(
+    null,
+  );
+  const [stickerPosition, setStickerPosition] = useState<FloatingBox | null>(
+    null,
+  );
   const [unlocked, setUnlocked] = useState(false);
 
   const canDodge = dodges < maxDodges;
-  const buttonText = canDodge ? "Mở hồ sơ tuyệt mật" : "Rồi bấm đi, cho xem thật nè.";
+  const buttonText = canDodge ? "Mở hồ sơ tuyệt mật" : "Mở hồ sơ tuyệt mật";
   const activeSticker =
     dodges > 0 && birthdayConfig.runawayStickers.length > 0
-      ? birthdayConfig.runawayStickers[(dodges - 1) % birthdayConfig.runawayStickers.length]
+      ? birthdayConfig.runawayStickers[
+          (dodges - 1) % birthdayConfig.runawayStickers.length
+        ]
       : null;
-  const activeMessage = dodges > 0 ? trollMessages[(dodges - 1) % trollMessages.length] : null;
-  const activeStickerRotation = dodges > 0 ? stickerRotations[(dodges - 1) % stickerRotations.length] : 0;
-  const activeEvidenceLabel = dodges > 0 ? evidenceLabels[(dodges - 1) % evidenceLabels.length] : null;
+  const activeMessage =
+    dodges > 0 ? trollMessages[(dodges - 1) % trollMessages.length] : null;
+  const activeStickerRotation =
+    dodges > 0 ? stickerRotations[(dodges - 1) % stickerRotations.length] : 0;
+  const activeEvidenceLabel =
+    dodges > 0 ? evidenceLabels[(dodges - 1) % evidenceLabels.length] : null;
 
   function createRandomLayout(includeSticker: boolean) {
     if (!playgroundRef.current) return null;
     const rect = playgroundRef.current.getBoundingClientRect();
     const buttonRect = buttonRef.current?.getBoundingClientRect();
-    const safePadding = rect.width < 640 ? 16 : 30;
-    const buttonWidth = buttonRect?.width ?? 330;
-    const buttonHeight = buttonRect?.height ?? 64;
-    const cardWidth = Math.min(rect.width - safePadding * 2, rect.width < 640 ? 330 : 560);
-    const cardHeight = rect.width < 640 ? 136 : 172;
+    const safePadding = rect.width < 640 ? 16 : 28;
+    const buttonWidth = buttonRect?.width ?? 310;
+    const buttonHeight = buttonRect?.height ?? 56;
+    const cardWidth = Math.min(
+      rect.width - safePadding * 2,
+      rect.width < 640 ? 320 : 520,
+    );
+    const cardHeight = rect.width < 640 ? 126 : 148;
     const buttonSize = { width: buttonWidth, height: buttonHeight };
     const cardSize = { width: cardWidth, height: cardHeight };
 
-    const maxButtonX = Math.max(safePadding, rect.width - buttonWidth - safePadding);
-    const maxButtonY = Math.max(safePadding, rect.height - buttonHeight - safePadding);
-    const maxCardX = Math.max(safePadding, rect.width - cardWidth - safePadding);
-    const maxCardY = Math.max(safePadding, rect.height - cardHeight - safePadding);
+    const maxButtonX = Math.max(
+      safePadding,
+      rect.width - buttonWidth - safePadding,
+    );
+    const maxButtonY = Math.max(
+      safePadding,
+      rect.height - buttonHeight - safePadding,
+    );
+    const maxCardX = Math.max(
+      safePadding,
+      rect.width - cardWidth - safePadding,
+    );
+    const maxCardY = Math.max(
+      safePadding,
+      rect.height - cardHeight - safePadding,
+    );
 
     let nextButton = {
       x: randomBetween(safePadding, maxButtonX),
@@ -157,127 +183,150 @@ export function RunawayButtonRevealSection({ onUnlocked }: RunawayButtonRevealSe
     onUnlocked();
 
     window.setTimeout(() => {
-      document.getElementById("emotional-reveal")?.scrollIntoView({ behavior: "smooth" });
+      document
+        .getElementById("emotional-reveal")
+        ?.scrollIntoView({ behavior: "smooth" });
     }, 1100);
   }
 
   return (
     <section
       id="runaway"
-      className="relative flex min-h-screen flex-col overflow-hidden bg-[#101624] px-4 py-6 text-white sm:px-6 lg:px-8"
+      className="case-board relative flex min-h-screen flex-col overflow-y-auto overflow-x-hidden p-3 text-stone-950 sm:p-4 lg:h-screen lg:overflow-hidden"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(236,72,153,0.22),transparent_32%),radial-gradient(circle_at_82%_8%,rgba(56,189,248,0.18),transparent_30%),linear-gradient(145deg,#101624,#182233)]" />
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col">
-        <header className="grid gap-4 pt-4 text-center sm:pt-8">
-          <p className="mx-auto rounded-full border border-cyan-200/20 bg-cyan-200/10 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-cyan-100">
-            Kiểm tra quyền truy cập
-          </p>
-          <h2 className="mx-auto max-w-4xl font-display text-3xl font-black leading-tight sm:text-5xl lg:text-6xl">
-            Bạn có chắc muốn mở hồ sơ sinh nhật tuyệt mật không?
-          </h2>
-        </header>
+      <div className="relative z-10 flex min-h-[calc(100vh-1.5rem)] w-full items-center lg:h-full lg:min-h-0">
+        <div className="investigation-board intro-board relative flex min-h-[calc(100vh-1.5rem)] w-full flex-col overflow-visible rounded-[8px] border border-amber-950/50 p-4 sm:p-5 lg:h-full lg:min-h-0 lg:overflow-hidden lg:p-6">
+          <header className="paper-slip relative mx-auto w-full max-w-4xl px-4 py-3 text-center sm:px-5 sm:py-4">
+            <span className="pin pin-left" />
+            <span className="pin pin-right" />
+            <h2 className="mx-auto max-w-3xl font-display text-2xl font-black uppercase leading-tight tracking-[0.06em] text-stone-950 sm:text-4xl lg:text-5xl">
+              Bạn có chắc muốn mở hồ sơ sinh nhật tuyệt mật không?
+            </h2>
+          </header>
 
-        <div
-          ref={playgroundRef}
-          className="relative mt-5 min-h-[64vh] flex-1 overflow-hidden rounded-[34px] border border-white/12 bg-slate-950/34 shadow-2xl ring-1 ring-white/8 sm:mt-7"
-        >
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:48px_48px]" />
-          <span className="pointer-events-none absolute left-4 top-4 h-11 w-11 rounded-tl-3xl border-l border-t border-cyan-100/35" />
-          <span className="pointer-events-none absolute right-4 top-4 h-11 w-11 rounded-tr-3xl border-r border-t border-cyan-100/35" />
-          <span className="pointer-events-none absolute bottom-4 left-4 h-11 w-11 rounded-bl-3xl border-b border-l border-cyan-100/35" />
-          <span className="pointer-events-none absolute bottom-4 right-4 h-11 w-11 rounded-br-3xl border-b border-r border-cyan-100/35" />
-
-          {dodges === 0 && (
-            <motion.div
-              className="pointer-events-none absolute left-1/2 top-[22%] w-[min(82vw,520px)] -translate-x-1/2 rounded-[30px] border border-dashed border-cyan-100/18 bg-white/[0.035] p-6 text-center text-sm font-black uppercase tracking-[0.22em] text-cyan-100/55"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              Hồ sơ đang khóa
-            </motion.div>
-          )}
-
-          <AnimatePresence initial={false}>
-            {dodges > 0 &&
-              !unlocked &&
-              activeSticker &&
-              activeMessage &&
-              activeEvidenceLabel &&
-              stickerPosition && (
-                <motion.div
-                  key={dodges}
-                  className="pointer-events-none absolute z-20 flex w-[calc(100%-32px)] max-w-[560px] items-center gap-3 rounded-[30px] border border-cyan-200/18 bg-slate-950/82 p-3 pr-4 text-left shadow-2xl shadow-rose-500/18 ring-1 ring-white/10 backdrop-blur-md sm:gap-5 sm:p-4 sm:pr-6"
-                  initial={{
-                    opacity: 1,
-                    x: stickerPosition.x,
-                    y: stickerPosition.y,
-                    scale: 0.96,
-                    rotate: activeStickerRotation,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    x: stickerPosition.x,
-                    y: stickerPosition.y,
-                    scale: 1,
-                    rotate: activeStickerRotation,
-                  }}
-                  exit={{ opacity: 0, scale: 0.72, y: stickerPosition.y - 18 }}
-                  transition={{ type: "spring", stiffness: 520, damping: 28 }}
-                >
-                  <motion.img
-                    key={activeSticker.src}
-                    src={activeSticker.src}
-                    alt={activeSticker.alt}
-                    className="h-20 w-20 shrink-0 select-none rounded-2xl object-contain drop-shadow-2xl sm:h-28 sm:w-28"
-                    draggable={false}
-                    initial={{ rotate: -12, scale: 0.8 }}
-                    animate={{ rotate: [0, -5, 4, 0], scale: [1, 1.08, 1] }}
-                    transition={{ duration: 0.7, ease: "easeOut" }}
-                  />
-                  <div className="min-w-0">
-                    <span className="inline-flex rounded-full bg-amber-300 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-slate-950 shadow-lg sm:text-xs">
-                      {activeEvidenceLabel}
-                    </span>
-                    <p className="mt-2 text-base font-black leading-6 text-amber-100 sm:text-lg sm:leading-7">
-                      {activeMessage}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-          </AnimatePresence>
-
-          <motion.button
-            ref={buttonRef}
-            type="button"
-            className="absolute left-0 top-0 z-30 inline-flex min-h-14 w-[min(74vw,330px)] items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-300 via-rose-300 to-fuchsia-400 px-6 py-4 text-center font-black text-slate-950 shadow-glow transition focus:outline-none focus:ring-4 focus:ring-amber-200"
-            style={{ visibility: buttonPosition ? "visible" : "hidden" }}
-            animate={buttonPosition ? { x: buttonPosition.x, y: buttonPosition.y } : { x: 0, y: 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 22, mass: 0.76 }}
-            onClick={handleClick}
+          <div
+            ref={playgroundRef}
+            className="case-file-card relative mt-4 min-h-[420px] flex-1 overflow-hidden p-4 shadow-2xl sm:min-h-[50vh] lg:min-h-0"
           >
-            <LockOpen size={19} />
-            {buttonText}
-          </motion.button>
+            <span className="pin pin-top" />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(68,41,16,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(68,41,16,0.07)_1px,transparent_1px)] bg-[size:42px_42px]" />
+            <span className="pointer-events-none absolute left-4 top-4 h-10 w-10 border-l-2 border-t-2 border-red-900/40" />
+            <span className="pointer-events-none absolute right-4 top-4 h-10 w-10 border-r-2 border-t-2 border-red-900/40" />
+            <span className="pointer-events-none absolute bottom-4 left-4 h-10 w-10 border-b-2 border-l-2 border-red-900/40" />
+            <span className="pointer-events-none absolute bottom-4 right-4 h-10 w-10 border-b-2 border-r-2 border-red-900/40" />
+
+            {dodges === 0 && (
+              <motion.div
+                className="pointer-events-none absolute left-1/2 top-[18%] w-[min(82vw,480px)] -translate-x-1/2 border-2 border-dashed border-stone-900/25 bg-[#d6c19b]/60 p-5 text-center font-mono text-xs font-black uppercase tracking-[0.18em] text-stone-700"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                Hồ sơ đang khóa
+              </motion.div>
+            )}
+
+            <AnimatePresence initial={false}>
+              {dodges > 0 &&
+                !unlocked &&
+                activeSticker &&
+                activeMessage &&
+                activeEvidenceLabel &&
+                stickerPosition && (
+                  <motion.div
+                    key={dodges}
+                    className="pointer-events-none absolute z-20 flex w-[calc(100%-32px)] max-w-[520px] items-center gap-3 border border-stone-900/30 bg-[#d6c19b] p-3 pr-4 text-left shadow-2xl sm:gap-4"
+                    initial={{
+                      opacity: 1,
+                      x: stickerPosition.x,
+                      y: stickerPosition.y,
+                      scale: 0.96,
+                      rotate: activeStickerRotation,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: stickerPosition.x,
+                      y: stickerPosition.y,
+                      scale: 1,
+                      rotate: activeStickerRotation,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      scale: 0.72,
+                      y: stickerPosition.y - 18,
+                    }}
+                    transition={{ type: "spring", stiffness: 520, damping: 28 }}
+                  >
+                    <motion.img
+                      key={activeSticker.src}
+                      src={activeSticker.src}
+                      alt={activeSticker.alt}
+                      className="h-16 w-16 shrink-0 select-none object-contain drop-shadow-2xl sm:h-24 sm:w-24"
+                      draggable={false}
+                      initial={{ rotate: -12, scale: 0.8 }}
+                      animate={{ rotate: [0, -5, 4, 0], scale: [1, 1.08, 1] }}
+                      transition={{ duration: 0.7, ease: "easeOut" }}
+                    />
+                    <div className="min-w-0">
+                      <span className="inline-flex bg-red-800 px-3 py-1 font-mono text-[10px] font-black uppercase tracking-[0.14em] text-amber-50 sm:text-xs">
+                        {activeEvidenceLabel}
+                      </span>
+                      <p className="mt-2 font-display text-base font-black leading-6 text-stone-950 sm:text-lg">
+                        {activeMessage}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+            </AnimatePresence>
+
+            <motion.button
+              ref={buttonRef}
+              type="button"
+              className="absolute left-0 top-0 z-30 inline-flex min-h-12 w-[min(74vw,310px)] items-center justify-center gap-2 bg-stone-950 px-5 py-3 text-center font-display text-sm font-black uppercase tracking-[0.06em] text-amber-100 shadow-xl transition focus:outline-none focus:ring-4 focus:ring-red-900/30"
+              style={{ visibility: buttonPosition ? "visible" : "hidden" }}
+              animate={
+                buttonPosition
+                  ? { x: buttonPosition.x, y: buttonPosition.y }
+                  : { x: 0, y: 0 }
+              }
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 22,
+                mass: 0.76,
+              }}
+              onClick={handleClick}
+            >
+              <LockOpen size={18} />
+              {buttonText}
+            </motion.button>
+          </div>
+
+          <p className="absolute bottom-4 right-4 hidden border border-amber-200/20 bg-stone-950/70 px-3 py-2 font-mono text-xs font-black uppercase tracking-[0.16em] text-amber-100 lg:block">
+            Bước 03 / Xác minh lần cuối
+          </p>
         </div>
       </div>
 
       <AnimatePresence>
         {unlocked && (
           <motion.div
-            className="absolute inset-0 z-40 grid place-items-center bg-slate-950/94 p-5 text-center backdrop-blur-md"
+            className="absolute inset-0 z-40 grid place-items-center bg-stone-950/94 p-5 text-center backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="max-w-2xl">
-              <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-emerald-300 text-slate-950 shadow-neon">
+            <div className="paper-slip relative max-w-2xl p-6">
+              <span className="pin pin-left" />
+              <span className="pin pin-right" />
+              <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-stone-950 text-amber-100">
                 <ShieldCheck size={30} />
               </div>
-              <p className="font-display text-4xl font-black text-emerald-200 sm:text-6xl">
+              <p className="font-display text-4xl font-black uppercase text-red-900 sm:text-5xl">
                 <GlitchText>TRUY CẬP THÀNH CÔNG</GlitchText>
               </p>
-              <p className="mt-5 text-lg font-semibold leading-8 text-slate-200">
-                Bạn vừa vượt qua bài kiểm tra kiên nhẫn. Hồ sơ chính thức được mở.
+              <p className="mt-4 font-mono text-sm font-black uppercase leading-6 text-stone-800">
+                Bạn vừa vượt qua bài kiểm tra kiên nhẫn. Hồ sơ chính thức được
+                mở.
               </p>
             </div>
           </motion.div>

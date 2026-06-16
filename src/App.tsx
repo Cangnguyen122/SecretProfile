@@ -15,7 +15,10 @@ type ExperienceStage = "intro" | "scan" | "challenge" | "story";
 
 export default function App() {
   const [stage, setStage] = useState<ExperienceStage>("intro");
+
   const introAudioRef = useRef<HTMLAudioElement | null>(null);
+  const mainAudioRef = useRef<HTMLAudioElement | null>(null);
+
   const [introMusicOn, setIntroMusicOn] = useState(true);
 
   useEffect(() => {
@@ -26,6 +29,16 @@ export default function App() {
     if (stage !== "intro") return;
 
     startIntroMusic();
+  }, [stage]);
+
+  useEffect(() => {
+    if (stage !== "story") {
+      stopMainMusic();
+      return;
+    }
+
+    stopIntroMusic();
+    startMainMusic();
   }, [stage]);
 
   function startIntroMusic() {
@@ -40,6 +53,38 @@ export default function App() {
       .play()
       .then(() => setIntroMusicOn(true))
       .catch(() => setIntroMusicOn(false));
+  }
+
+  function stopIntroMusic() {
+    const audio = introAudioRef.current;
+    if (!audio) return;
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.muted = false;
+    setIntroMusicOn(false);
+  }
+
+  function startMainMusic() {
+    const audio = mainAudioRef.current;
+    if (!audio) return;
+
+    audio.volume = 0.5;
+    audio.loop = true;
+    audio.muted = false;
+
+    void audio.play().catch(() => {
+      // Một số trình duyệt có thể chặn autoplay nếu chưa có tương tác.
+    });
+  }
+
+  function stopMainMusic() {
+    const audio = mainAudioRef.current;
+    if (!audio) return;
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.muted = false;
   }
 
   useEffect(() => {
@@ -62,16 +107,6 @@ export default function App() {
     };
   }, [stage, introMusicOn]);
 
-  function stopIntroMusic() {
-    const audio = introAudioRef.current;
-    if (!audio) return;
-
-    audio.pause();
-    audio.currentTime = 0;
-    audio.muted = false;
-    setIntroMusicOn(false);
-  }
-
   function toggleIntroMusic() {
     const audio = introAudioRef.current;
     if (!audio) return;
@@ -86,10 +121,25 @@ export default function App() {
 
   function goToChallenge() {
     stopIntroMusic();
+    stopMainMusic();
     setStage("challenge");
   }
 
-  useEffect(() => stopIntroMusic, []);
+  function goToStory() {
+    stopIntroMusic();
+    setStage("story");
+
+    window.setTimeout(() => {
+      startMainMusic();
+    }, 80);
+  }
+
+  useEffect(() => {
+    return () => {
+      stopIntroMusic();
+      stopMainMusic();
+    };
+  }, []);
 
   return (
     <main>
@@ -101,7 +151,17 @@ export default function App() {
         loop
         playsInline
       />
+
+      <audio
+        ref={mainAudioRef}
+        src="/assets/HPBD.mp3"
+        preload="auto"
+        loop
+        playsInline
+      />
+
       <ScrollProgress />
+
       <AnimatePresence mode="wait">
         {stage === "intro" && (
           <motion.div
@@ -139,7 +199,7 @@ export default function App() {
             exit={{ opacity: 0, y: -18 }}
             transition={{ duration: 0.45, ease: "easeOut" }}
           >
-            <RunawayButtonRevealSection onUnlocked={() => setStage("story")} />
+            <RunawayButtonRevealSection onUnlocked={goToStory} />
           </motion.div>
         )}
 
@@ -152,7 +212,6 @@ export default function App() {
           >
             <EmotionalRevealSection />
             <VideoWishesSection />
-            <CoupleTimelineSection />
             <MemoryGallerySection />
             <FinalCelebrationSection />
           </motion.div>

@@ -73,6 +73,28 @@ export function MemoryGallerySection() {
     setActiveIndex(index);
   }
 
+  function openLightbox(index: number) {
+  setSelectedPhoto(albumPhotos[index] ?? null);
+}
+
+  function goToLightboxPhoto(index: number) {
+    if (albumPhotos.length === 0) return;
+
+    const nextIndex = wrapIndex(index, albumPhotos.length);
+
+    setDirection(nextIndex > activeIndex ? 1 : -1);
+    setActiveIndex(nextIndex);
+    setSelectedPhoto(albumPhotos[nextIndex] ?? null);
+  }
+
+  function goToLightboxPrevious() {
+    goToLightboxPhoto(activeIndex - 1);
+  }
+
+  function goToLightboxNext() {
+    goToLightboxPhoto(activeIndex + 1);
+  }
+
   const albumTabs = (
     <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {albumOrder.map((album) => {
@@ -266,7 +288,7 @@ export function MemoryGallerySection() {
                     if (info.offset.x < -70) goToNext();
                     if (info.offset.x > 70) goToPrevious();
                   }}
-                  onClick={() => setSelectedPhoto(activePhoto)}
+                  onClick={() => openLightbox(activeIndex)}
                   aria-label={`Mở ảnh: ${activePhoto.caption}`}
                 >
                   <div className="relative aspect-[4/5] overflow-hidden rounded-[22px] bg-slate-100">
@@ -335,12 +357,17 @@ export function MemoryGallerySection() {
       </div>
 
       <PhotoLightbox
-        photo={selectedPhoto}
-        categoryLabel={
-          selectedPhoto ? birthdayConfig.galleryCategories[selectedPhoto.category] : undefined
-        }
-        onClose={() => setSelectedPhoto(null)}
-      />
+  photo={selectedPhoto}
+  categoryLabel={
+    selectedPhoto ? birthdayConfig.galleryCategories[selectedPhoto.category] : undefined
+  }
+  onClose={() => setSelectedPhoto(null)}
+  canNavigate={albumPhotos.length > 1}
+  currentIndex={activeIndex}
+  totalCount={albumPhotos.length}
+  onPrevious={goToLightboxPrevious}
+  onNext={goToLightboxNext}
+/>
     </SectionWrapper>
   );
 }

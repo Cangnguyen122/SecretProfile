@@ -30,9 +30,6 @@ export function EmotionalRevealSection() {
         </div>
 
         <div className="order-1 text-center lg:order-2 lg:text-left">
-          <p className="text-sm font-black uppercase tracking-[0.32em] text-rose-500">
-            Mood switch
-          </p>
           <h2 className="mt-5 font-display text-4xl font-black leading-tight sm:text-6xl">
             Happy Birthday {personA.name} & {personB.name}
           </h2>

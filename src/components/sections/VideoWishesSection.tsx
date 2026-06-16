@@ -5,6 +5,7 @@ import { SectionWrapper } from "../ui/SectionWrapper";
 
 function getEmbedUrl(url: string) {
   if (!url || url === "VIDEO_WISHES_URL") return "";
+  if (url.startsWith("/")) return url;
 
   try {
     const parsed = new URL(url);
@@ -54,7 +55,13 @@ export function VideoWishesSection() {
           <div className="aspect-video">
             {embedUrl ? (
               isDirectVideo ? (
-                <video className="h-full w-full" controls playsInline preload="metadata">
+                <video
+                  className="h-full w-full bg-black object-contain"
+                  controls
+                  playsInline
+                  preload="metadata"
+                  poster={birthdayConfig.videoPosterSrc}
+                >
                   <source src={embedUrl} />
                 </video>
               ) : (
