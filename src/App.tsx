@@ -73,8 +73,22 @@ export default function App() {
     audio.loop = true;
     audio.muted = false;
 
+    if (!audio.paused) return;
+
     void audio.play().catch(() => {
-      // Một số trình duyệt có thể chặn autoplay nếu chưa có tương tác.
+      const retryPlay = () => {
+        window.removeEventListener("pointerdown", retryPlay, { capture: true });
+        window.removeEventListener("click", retryPlay, { capture: true });
+        window.removeEventListener("keydown", retryPlay, { capture: true });
+        window.removeEventListener("touchstart", retryPlay, { capture: true });
+
+        void audio.play().catch(() => {});
+      };
+
+      window.addEventListener("pointerdown", retryPlay, { once: true, capture: true });
+      window.addEventListener("click", retryPlay, { once: true, capture: true });
+      window.addEventListener("keydown", retryPlay, { once: true, capture: true });
+      window.addEventListener("touchstart", retryPlay, { once: true, capture: true });
     });
   }
 
@@ -85,6 +99,19 @@ export default function App() {
     audio.pause();
     audio.currentTime = 0;
     audio.muted = false;
+  }
+
+  function pauseMainMusicForVideo() {
+    const audio = mainAudioRef.current;
+    if (!audio) return;
+
+    audio.pause();
+  }
+
+  function resumeMainMusicAfterVideo() {
+    if (stage !== "story") return;
+
+    startMainMusic();
   }
 
   useEffect(() => {
@@ -211,7 +238,13 @@ export default function App() {
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <EmotionalRevealSection />
-            <VideoWishesSection />
+
+            <VideoWishesSection
+              onVideoPlay={pauseMainMusicForVideo}
+              onVideoPause={resumeMainMusicAfterVideo}
+              onVideoEnded={resumeMainMusicAfterVideo}
+            />
+
             <MemoryGallerySection />
             <FinalCelebrationSection />
           </motion.div>
